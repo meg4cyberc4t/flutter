@@ -15,7 +15,8 @@ vars = {
   'skia_git': 'https://skia.googlesource.com',
   'llvm_git': 'https://llvm.googlesource.com',
   'dart_ai_rev': '9c96bfe5f091c9451eff5b59c9bffeb2e806b875',
-  'skia_revision': '430885776aa87d5e9cdfa369ceb4e52e1256fdde',
+  # Paired Skia prototype: feat/inline-text-alignment in meg4cyberc4t/skia.
+  'skia_revision': '231b9709d39085da76c0a566f609d3362e67ddd2',
 
   # Do not download the Emscripten SDK by default.
   # This prevents us from downloading the Emscripten toolchain for builds
@@ -220,6 +221,7 @@ allowed_hosts = [
   'chromium.googlesource.com',
   'dart.googlesource.com',
   'flutter.googlesource.com',
+  'github.com',
   'llvm.googlesource.com',
   'skia.googlesource.com',
 ]
@@ -505,7 +507,7 @@ deps = {
    Var('flutter_git') + '/third_party/freetype2' + '@' + 'db7276fd53cda30c7f0fcd6b11e2e8f43b4b5e82',
 
   'engine/src/flutter/third_party/skia':
-   Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
+   'https://github.com/meg4cyberc4t/skia.git' + '@' + Var('skia_revision'),
 
   'engine/src/flutter/third_party/ocmock':
    Var('flutter_git') + '/third_party/ocmock' + '@' +  Var('ocmock_rev'),

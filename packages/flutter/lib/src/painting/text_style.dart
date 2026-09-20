@@ -8,7 +8,14 @@ library;
 import 'dart:collection';
 import 'dart:ui'
     as ui
-    show ParagraphStyle, Shadow, StrutStyle, TextStyle, kTextHeightNone, lerpDouble;
+    show
+        ParagraphStyle,
+        PlaceholderAlignment,
+        Shadow,
+        StrutStyle,
+        TextStyle,
+        kTextHeightNone,
+        lerpDouble;
 
 import 'package:flutter/foundation.dart';
 
@@ -1341,6 +1348,7 @@ class TextStyle with Diagnosticable {
     )
     double textScaleFactor = 1.0,
     TextScaler textScaler = TextScaler.noScaling,
+    ui.PlaceholderAlignment? alignment,
   }) {
     assert(
       identical(textScaler, TextScaler.noScaling) || textScaleFactor == 1.0,
@@ -1352,6 +1360,7 @@ class TextStyle with Diagnosticable {
       final double size => textScaler.scale(size),
     };
     return ui.TextStyle(
+      alignment: alignment,
       color: color,
       decoration: decoration,
       decorationColor: decorationColor,
@@ -1395,6 +1404,7 @@ class TextStyle with Diagnosticable {
     String? ellipsis,
     int? maxLines,
     TextHeightBehavior? textHeightBehavior,
+    ui.PlaceholderAlignment alignment = ui.PlaceholderAlignment.baseline,
     Locale? locale,
     String? fontFamily,
     double? fontSize,
@@ -1423,6 +1433,7 @@ class TextStyle with Diagnosticable {
       fontSize: textScaler.scale(fontSize ?? this.fontSize ?? kDefaultFontSize),
       height: height ?? this.height,
       textHeightBehavior: effectiveTextHeightBehavior,
+      alignment: alignment,
       strutStyle: strutStyle == null
           ? null
           : ui.StrutStyle(

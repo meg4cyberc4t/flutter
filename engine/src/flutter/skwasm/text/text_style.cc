@@ -161,3 +161,9 @@ SKWASM_EXPORT void textStyle_setFontVariations(Skwasm::TextStyle* style,
   style->skia_style.setFontArguments(
       SkFontArguments().setVariationDesignPosition(position));
 }
+
+SKWASM_EXPORT void textStyle_setAlignment(
+    Skwasm::TextStyle* style,
+    skia::textlayout::PlaceholderAlignment alignment) {
+  style->skia_style.setAlignment(alignment);
+}

@@ -79,3 +79,9 @@ external void paragraphStyleSetApplyRoundingHack(
   ParagraphStyleHandle handle,
   bool applyRoundingHack,
 );
+
+@Native<Void Function(ParagraphStyleHandle, Int)>(
+  symbol: 'paragraphStyle_setAlignment',
+  isLeaf: true,
+)
+external void paragraphStyleSetAlignment(ParagraphStyleHandle handle, int alignment);

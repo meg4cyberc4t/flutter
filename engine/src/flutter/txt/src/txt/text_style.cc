@@ -14,6 +14,9 @@ namespace txt {
 TextStyle::TextStyle() : font_families(GetDefaultFontFamilies()) {}
 
 bool TextStyle::equals(const TextStyle& other) const {
+  if (alignment != other.alignment) {
+    return false;
+  }
   if (color != other.color) {
     return false;
   }

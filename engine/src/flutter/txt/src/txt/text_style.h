@@ -13,6 +13,7 @@
 #include "font_features.h"
 #include "font_style.h"
 #include "font_weight.h"
+#include "placeholder_run.h"
 #include "text_baseline.h"
 #include "text_decoration.h"
 #include "text_shadow.h"
@@ -35,6 +36,7 @@ class TextStyle {
   FontStyle font_style = FontStyle::normal;
   TextBaseline text_baseline = TextBaseline::kAlphabetic;
   bool half_leading = false;
+  std::optional<PlaceholderAlignment> alignment;
   // An ordered list of fonts in order of priority. The first font is more
   // highly preferred than the last font.
   std::vector<std::string> font_families;

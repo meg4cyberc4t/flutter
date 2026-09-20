@@ -11,7 +11,13 @@ library;
 import 'dart:math' as math;
 import 'dart:ui'
     as ui
-    show Image, ImageFilter, SemanticsHitTestBehavior, SemanticsInputType, TextHeightBehavior;
+    show
+        Image,
+        ImageFilter,
+        PlaceholderAlignment,
+        SemanticsHitTestBehavior,
+        SemanticsInputType,
+        TextHeightBehavior;
 
 import 'package:flutter/animation.dart';
 import 'package:flutter/foundation.dart';
@@ -6532,6 +6538,7 @@ class RichText extends MultiChildRenderObjectWidget {
     this.strutStyle,
     this.textWidthBasis = TextWidthBasis.parent,
     this.textHeightBehavior,
+    this.alignment = ui.PlaceholderAlignment.baseline,
     this.selectionRegistrar,
     this.selectionColor,
   }) : assert(maxLines == null || maxLines > 0),
@@ -6629,6 +6636,9 @@ class RichText extends MultiChildRenderObjectWidget {
   /// {@macro dart.ui.textHeightBehavior}
   final ui.TextHeightBehavior? textHeightBehavior;
 
+  /// {@macro flutter.painting.TextPainter.alignment}
+  final ui.PlaceholderAlignment alignment;
+
   /// The [SelectionRegistrar] this rich text is subscribed to.
   ///
   /// If this is set, [selectionColor] must be non-null.
@@ -6660,6 +6670,7 @@ class RichText extends MultiChildRenderObjectWidget {
       strutStyle: strutStyle,
       textWidthBasis: textWidthBasis,
       textHeightBehavior: textHeightBehavior,
+      alignment: alignment,
       locale: locale ?? Localizations.maybeLocaleOf(context),
       registrar: selectionRegistrar,
       selectionColor: selectionColor,
@@ -6681,6 +6692,7 @@ class RichText extends MultiChildRenderObjectWidget {
       ..strutStyle = strutStyle
       ..textWidthBasis = textWidthBasis
       ..textHeightBehavior = textHeightBehavior
+      ..alignment = alignment
       ..locale = locale ?? Localizations.maybeLocaleOf(context)
       ..registrar = selectionRegistrar
       ..selectionColor = selectionColor
@@ -6713,6 +6725,13 @@ class RichText extends MultiChildRenderObjectWidget {
         'textWidthBasis',
         textWidthBasis,
         defaultValue: TextWidthBasis.parent,
+      ),
+    );
+    properties.add(
+      EnumProperty<ui.PlaceholderAlignment>(
+        'alignment',
+        alignment,
+        defaultValue: ui.PlaceholderAlignment.baseline,
       ),
     );
     properties.add(StringProperty('text', text.toPlainText()));

@@ -320,6 +320,7 @@ class TextHeightBehavior {
 
 abstract class TextStyle {
   factory TextStyle({
+    PlaceholderAlignment? alignment,
     Color? color,
     TextDecoration? decoration,
     Color? decorationColor,
@@ -342,6 +343,7 @@ abstract class TextStyle {
     List<FontFeature>? fontFeatures,
     List<FontVariation>? fontVariations,
   }) => engine.renderer.createTextStyle(
+    alignment: alignment,
     color: color,
     decoration: decoration,
     decorationColor: decorationColor,
@@ -376,6 +378,7 @@ abstract class ParagraphStyle {
     double? fontSize,
     double? height,
     TextHeightBehavior? textHeightBehavior,
+    PlaceholderAlignment alignment = PlaceholderAlignment.baseline,
     FontWeight? fontWeight,
     FontStyle? fontStyle,
     StrutStyle? strutStyle,
@@ -389,6 +392,7 @@ abstract class ParagraphStyle {
     fontSize: fontSize,
     height: height,
     textHeightBehavior: textHeightBehavior,
+    alignment: alignment,
     fontWeight: fontWeight,
     fontStyle: fontStyle,
     strutStyle: strutStyle,

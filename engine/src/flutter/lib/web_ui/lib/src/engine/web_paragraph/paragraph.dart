@@ -23,6 +23,7 @@ final DomCanvasRenderingContext2D layoutContext =
 class WebParagraphStyle implements ui.ParagraphStyle {
   // TODO(mdebbar): Make all params required to avoid future bugs.
   WebParagraphStyle({
+    ui.PlaceholderAlignment alignment = ui.PlaceholderAlignment.baseline,
     ui.TextDirection? textDirection,
     ui.TextAlign? textAlign,
     String? fontFamily,
@@ -47,7 +48,11 @@ class WebParagraphStyle implements ui.ParagraphStyle {
          color: color,
        ),
        textDirection = textDirection ?? ui.TextDirection.ltr,
-       textAlign = textAlign ?? ui.TextAlign.start;
+       textAlign = textAlign ?? ui.TextAlign.start {
+    if (alignment != ui.PlaceholderAlignment.baseline) {
+      throw UnsupportedError('alignment requires SkParagraph. Disable preferWebParagraph.');
+    }
+  }
 
   WebTextStyle get textStyle => _textStyle;
   final WebTextStyle _textStyle;
@@ -141,6 +146,7 @@ enum ShadowDirection { left, right, top, bottom }
 
 class WebTextStyle extends SharedTextStyle implements ui.TextStyle {
   factory WebTextStyle({
+    ui.PlaceholderAlignment? alignment,
     String? fontFamily,
     List<String>? fontFamilyFallback,
     double? fontSize,
@@ -163,6 +169,11 @@ class WebTextStyle extends SharedTextStyle implements ui.TextStyle {
     List<ui.FontFeature>? fontFeatures,
     List<ui.FontVariation>? fontVariations,
   }) {
+    if (alignment != null && alignment != ui.PlaceholderAlignment.baseline) {
+      throw UnsupportedError(
+        'TextSpan.alignment requires SkParagraph. Disable preferWebParagraph.',
+      );
+    }
     return WebTextStyle._(
       fontFamily: fontFamily, // ?? 'Arial',
       fontFamilyFallback: fontFamilyFallback,

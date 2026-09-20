@@ -21,6 +21,7 @@ String? _computeEffectiveFontFamily(String? fontFamily) {
 @immutable
 class CkParagraphStyle implements ui.ParagraphStyle {
   CkParagraphStyle({
+    ui.PlaceholderAlignment alignment = ui.PlaceholderAlignment.baseline,
     ui.TextAlign? textAlign,
     ui.TextDirection? textDirection,
     int? maxLines,
@@ -34,6 +35,7 @@ class CkParagraphStyle implements ui.ParagraphStyle {
     String? ellipsis,
     ui.Locale? locale,
   }) : skParagraphStyle = toSkParagraphStyle(
+         alignment,
          textAlign,
          textDirection,
          maxLines,
@@ -47,6 +49,7 @@ class CkParagraphStyle implements ui.ParagraphStyle {
          ellipsis,
          locale,
        ),
+       _alignment = alignment,
        _textAlign = textAlign,
        _textDirection = textDirection,
        _fontWeight = fontWeight,
@@ -62,6 +65,7 @@ class CkParagraphStyle implements ui.ParagraphStyle {
        _locale = locale;
 
   final SkParagraphStyle skParagraphStyle;
+  final ui.PlaceholderAlignment _alignment;
 
   final ui.TextAlign? _textAlign;
   final ui.TextDirection? _textDirection;
@@ -156,6 +160,7 @@ class CkParagraphStyle implements ui.ParagraphStyle {
   }
 
   static SkParagraphStyle toSkParagraphStyle(
+    ui.PlaceholderAlignment alignment,
     ui.TextAlign? textAlign,
     ui.TextDirection? textDirection,
     int? maxLines,
@@ -170,6 +175,7 @@ class CkParagraphStyle implements ui.ParagraphStyle {
     ui.Locale? locale,
   ) {
     final properties = SkParagraphStyleProperties();
+    properties.alignment = alignment.index;
 
     if (textAlign != null) {
       properties.textAlign = toSkTextAlign(textAlign);
@@ -214,6 +220,7 @@ class CkParagraphStyle implements ui.ParagraphStyle {
 
   CkTextStyle getTextStyle() {
     return CkTextStyle._(
+      alignment: _alignment,
       originalFontFamily: _originalFontFamily,
       effectiveFontFamily: _effectiveFontFamily,
       fontSize: _fontSize,
@@ -261,6 +268,7 @@ class CkParagraphStyle implements ui.ParagraphStyle {
         other._fontSize == _fontSize &&
         other._height == _height &&
         other._textHeightBehavior == _textHeightBehavior &&
+        other._alignment == _alignment &&
         other._strutStyle == _strutStyle &&
         other._ellipsis == _ellipsis &&
         other._locale == _locale;
@@ -279,6 +287,7 @@ class CkParagraphStyle implements ui.ParagraphStyle {
       _fontSize,
       _height,
       _textHeightBehavior,
+      _alignment,
       _strutStyle,
       _ellipsis,
       _locale,
@@ -315,6 +324,7 @@ class CkParagraphStyle implements ui.ParagraphStyle {
 @immutable
 class CkTextStyle implements ui.TextStyle {
   factory CkTextStyle({
+    ui.PlaceholderAlignment? alignment,
     ui.Color? color,
     ui.TextDecoration? decoration,
     ui.Color? decorationColor,
@@ -343,6 +353,7 @@ class CkTextStyle implements ui.TextStyle {
       'The color argument is just a shorthand for "foreground: Paint()..color = color".',
     );
     return CkTextStyle._(
+      alignment: alignment,
       color: color,
       decoration: decoration,
       decorationColor: decorationColor,
@@ -372,6 +383,7 @@ class CkTextStyle implements ui.TextStyle {
   }
 
   CkTextStyle._({
+    required this.alignment,
     required this.color,
     required this.decoration,
     required this.decorationColor,
@@ -397,6 +409,7 @@ class CkTextStyle implements ui.TextStyle {
     required this.fontVariations,
   });
 
+  final ui.PlaceholderAlignment? alignment;
   final ui.Color? color;
   final ui.TextDecoration? decoration;
   final ui.Color? decorationColor;
@@ -428,6 +441,7 @@ class CkTextStyle implements ui.TextStyle {
   CkTextStyle mergeWith(CkTextStyle other) {
     final double? textHeight = other.height == ui.kTextHeightNone ? null : (other.height ?? height);
     return CkTextStyle._(
+      alignment: other.alignment ?? alignment,
       color: other.color ?? color,
       decoration: other.decoration ?? decoration,
       decorationColor: other.decorationColor ?? decorationColor,
@@ -486,6 +500,7 @@ class CkTextStyle implements ui.TextStyle {
     final List<ui.FontVariation>? fontVariations = this.fontVariations;
 
     final properties = SkTextStyleProperties();
+    properties.alignment = alignment?.index ?? -1;
 
     if (background != null) {
       properties.backgroundColor = makeFreshSkColor(background.color);
@@ -618,6 +633,7 @@ class CkTextStyle implements ui.TextStyle {
       return true;
     }
     return other is CkTextStyle &&
+        other.alignment == alignment &&
         other.color == color &&
         other.decoration == decoration &&
         other.decorationColor == decorationColor &&
@@ -667,8 +683,9 @@ class CkTextStyle implements ui.TextStyle {
       foreground,
       shadows == null ? null : Object.hashAll(shadows),
       decorationThickness,
-      // Object.hash goes up to 20 arguments, but we have 21
+      // Combine the remaining properties within Object.hash's argument limit.
       Object.hash(
+        alignment,
         fontFeatures == null ? null : Object.hashAll(fontFeatures),
         fontVariations == null ? null : Object.hashAll(fontVariations),
       ),
