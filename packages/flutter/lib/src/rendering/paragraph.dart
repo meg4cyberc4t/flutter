@@ -352,6 +352,7 @@ class RenderParagraph extends RenderBox
     StrutStyle? strutStyle,
     TextWidthBasis textWidthBasis = TextWidthBasis.parent,
     ui.TextHeightBehavior? textHeightBehavior,
+    ui.PlaceholderAlignment alignment = ui.PlaceholderAlignment.baseline,
     List<RenderBox>? children,
     this._selectionColor,
     SelectionRegistrar? registrar,
@@ -376,6 +377,7 @@ class RenderParagraph extends RenderBox
          strutStyle: strutStyle,
          textWidthBasis: textWidthBasis,
          textHeightBehavior: textHeightBehavior,
+         alignment: alignment,
        ) {
     addAll(children);
     this.registrar = registrar;
@@ -406,7 +408,8 @@ class RenderParagraph extends RenderBox
       ..locale = _textPainter.locale
       ..strutStyle = _textPainter.strutStyle
       ..textWidthBasis = _textPainter.textWidthBasis
-      ..textHeightBehavior = _textPainter.textHeightBehavior;
+      ..textHeightBehavior = _textPainter.textHeightBehavior
+      ..alignment = _textPainter.alignment;
   }
 
   List<AttributedString>? _cachedAttributedLabels;
@@ -754,6 +757,17 @@ class RenderParagraph extends RenderBox
       return;
     }
     _textPainter.textHeightBehavior = value;
+    _overflowShader = null;
+    markNeedsLayout();
+  }
+
+  /// {@macro flutter.painting.TextPainter.alignment}
+  ui.PlaceholderAlignment get alignment => _textPainter.alignment;
+  set alignment(ui.PlaceholderAlignment value) {
+    if (_textPainter.alignment == value) {
+      return;
+    }
+    _textPainter.alignment = value;
     _overflowShader = null;
     markNeedsLayout();
   }

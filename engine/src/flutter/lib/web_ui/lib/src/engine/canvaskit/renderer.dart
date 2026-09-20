@@ -329,6 +329,7 @@ class CanvasKitRenderer extends Renderer {
 
   @override
   ui.TextStyle createTextStyle({
+    ui.PlaceholderAlignment? alignment,
     ui.Color? color,
     ui.TextDecoration? decoration,
     ui.Color? decorationColor,
@@ -352,6 +353,7 @@ class CanvasKitRenderer extends Renderer {
     List<ui.FontVariation>? fontVariations,
   }) => isWebParagraphEnabled
       ? WebTextStyle(
+          alignment: alignment,
           color: color,
           decoration: decoration,
           decorationColor: decorationColor,
@@ -375,6 +377,7 @@ class CanvasKitRenderer extends Renderer {
           fontVariations: fontVariations,
         )
       : CkTextStyle(
+          alignment: alignment,
           color: color,
           decoration: decoration,
           decorationColor: decorationColor,
@@ -407,6 +410,7 @@ class CanvasKitRenderer extends Renderer {
     double? fontSize,
     double? height,
     ui.TextHeightBehavior? textHeightBehavior,
+    ui.PlaceholderAlignment alignment = ui.PlaceholderAlignment.baseline,
     ui.FontWeight? fontWeight,
     ui.FontStyle? fontStyle,
     ui.StrutStyle? strutStyle,
@@ -421,6 +425,7 @@ class CanvasKitRenderer extends Renderer {
           fontSize: fontSize,
           height: height,
           textHeightBehavior: textHeightBehavior,
+          alignment: alignment,
           fontWeight: fontWeight,
           fontStyle: fontStyle,
           strutStyle: strutStyle as WebStrutStyle?,
@@ -435,6 +440,7 @@ class CanvasKitRenderer extends Renderer {
           fontSize: fontSize,
           height: height,
           textHeightBehavior: textHeightBehavior,
+          alignment: alignment,
           fontWeight: fontWeight,
           fontStyle: fontStyle,
           strutStyle: strutStyle,

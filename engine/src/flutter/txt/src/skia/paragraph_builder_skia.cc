@@ -92,6 +92,7 @@ skt::ParagraphPainter::PaintID ParagraphBuilderSkia::CreatePaintID(
 
 skt::ParagraphStyle ParagraphBuilderSkia::TxtToSkia(const ParagraphStyle& txt) {
   skt::ParagraphStyle skia;
+  skia.setAlignment(static_cast<skt::PlaceholderAlignment>(txt.alignment));
   skt::TextStyle text_style;
 
   // Convert the default color of an SkParagraph text style into a DlPaint.
@@ -146,6 +147,9 @@ skt::ParagraphStyle ParagraphBuilderSkia::TxtToSkia(const ParagraphStyle& txt) {
 skt::TextStyle ParagraphBuilderSkia::TxtToSkia(const TextStyle& txt) {
   skt::TextStyle skia;
 
+  if (txt.alignment.has_value()) {
+    skia.setAlignment(static_cast<skt::PlaceholderAlignment>(*txt.alignment));
+  }
   skia.setColor(txt.color);
   skia.setDecoration(static_cast<skt::TextDecoration>(txt.decoration));
   skia.setDecorationColor(txt.decoration_color);

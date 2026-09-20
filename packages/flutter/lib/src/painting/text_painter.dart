@@ -611,6 +611,7 @@ class TextPainter {
     this._strutStyle,
     this._textWidthBasis = TextWidthBasis.parent,
     this._textHeightBehavior,
+    ui.PlaceholderAlignment alignment = ui.PlaceholderAlignment.baseline,
   }) : assert(text == null || text.debugAssertIsValid()),
        assert(maxLines == null || maxLines > 0),
        assert(
@@ -621,7 +622,8 @@ class TextPainter {
        _textScaler = textScaler == const _UnspecifiedTextScaler()
            ? TextScaler.linear(textScaleFactor)
            : textScaler,
-       _maxLines = maxLines {
+       _maxLines = maxLines,
+       _alignment = alignment {
     assert(debugMaybeDispatchCreated('painting', 'TextPainter', this));
   }
 
@@ -1025,6 +1027,27 @@ class TextPainter {
     markNeedsLayout();
   }
 
+  /// {@template flutter.painting.TextPainter.alignment}
+  /// Default vertical alignment of text within each existing line.
+  /// TextSpan.alignment overrides this value and is inherited by child spans.
+  /// WidgetSpan keeps its own alignment. Baseline preserves ordinary layout;
+  /// top, middle and bottom align font metric boxes within the line box.
+  /// On lines using this mode, a WidgetSpan's own top, middle or bottom alignment
+  /// is also resolved against that final line box. Its baseline modes are unchanged.
+  /// Above/below baseline place the metric box above/below the alphabetic
+  /// baseline and may overflow the original line box. Line heights are unchanged.
+  /// Shaping, horizontal positions and line breaks are preserved.
+  /// {@endtemplate}
+  ui.PlaceholderAlignment get alignment => _alignment;
+  ui.PlaceholderAlignment _alignment;
+  set alignment(ui.PlaceholderAlignment value) {
+    if (_alignment == value) {
+      return;
+    }
+    _alignment = value;
+    markNeedsLayout();
+  }
+
   /// An ordered list of [TextBox]es that bound the positions of the placeholders
   /// in the paragraph.
   ///
@@ -1087,6 +1110,7 @@ class TextPainter {
       textScaler: textScaler,
       maxLines: _maxLines,
       textHeightBehavior: _textHeightBehavior,
+      alignment: _alignment,
       ellipsis: _ellipsis,
       locale: _locale,
       strutStyle: _strutStyle,

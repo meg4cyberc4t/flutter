@@ -320,6 +320,7 @@ class SkwasmNativeTextStyle extends SkwasmObjectWrapper<RawTextStyle> {
 
 class SkwasmTextStyle implements ui.TextStyle {
   SkwasmTextStyle({
+    this.alignment,
     this.color,
     this.decoration,
     this.decorationColor,
@@ -349,6 +350,9 @@ class SkwasmTextStyle implements ui.TextStyle {
 
   void applyToNative(SkwasmNativeTextStyle style) {
     final TextStyleHandle handle = style.handle;
+    if (alignment != null) {
+      textStyleSetAlignment(handle, alignment!.index);
+    }
     if (color != null) {
       textStyleSetColor(handle, color!.value);
     }
@@ -464,6 +468,7 @@ class SkwasmTextStyle implements ui.TextStyle {
 
   List<String> get fontFamilies => <String>[?fontFamily, ...?fontFamilyFallback];
 
+  final ui.PlaceholderAlignment? alignment;
   final ui.Color? color;
   final ui.TextDecoration? decoration;
   final ui.Color? decorationColor;
@@ -492,6 +497,7 @@ class SkwasmTextStyle implements ui.TextStyle {
       return true;
     }
     return other is SkwasmTextStyle &&
+        other.alignment == alignment &&
         other.color == color &&
         other.decoration == decoration &&
         other.decorationColor == decorationColor &&
@@ -541,8 +547,9 @@ class SkwasmTextStyle implements ui.TextStyle {
       foreground,
       shadows == null ? null : Object.hashAll(shadows),
       decorationThickness,
-      // Object.hash goes up to 20 arguments, but we have 21
+      // Combine the remaining properties within Object.hash's argument limit.
       Object.hash(
+        alignment,
         fontFeatures == null ? null : Object.hashAll(fontFeatures),
         fontVariations == null ? null : Object.hashAll(fontVariations),
       ),
@@ -714,6 +721,7 @@ final class SkwasmStrutStyle implements ui.StrutStyle {
 
 class SkwasmParagraphStyle implements ui.ParagraphStyle {
   SkwasmParagraphStyle({
+    ui.PlaceholderAlignment alignment = ui.PlaceholderAlignment.baseline,
     ui.TextAlign? textAlign,
     ui.TextDirection? textDirection,
     int? maxLines,
@@ -726,7 +734,8 @@ class SkwasmParagraphStyle implements ui.ParagraphStyle {
     ui.StrutStyle? strutStyle,
     String? ellipsis,
     ui.Locale? locale,
-  }) : _textAlign = textAlign,
+  }) : _alignment = alignment,
+       _textAlign = textAlign,
        _textDirection = textDirection,
        _maxLines = maxLines,
        _fontFamily = fontFamily,
@@ -741,6 +750,7 @@ class SkwasmParagraphStyle implements ui.ParagraphStyle {
 
   (ParagraphStyleHandle, SkwasmNativeTextStyle) createNative() {
     final ParagraphStyleHandle handle = paragraphStyleCreate();
+    paragraphStyleSetAlignment(handle, _alignment.index);
     if (_textAlign != null) {
       paragraphStyleSetTextAlign(handle, _textAlign.index);
     }
@@ -823,6 +833,7 @@ class SkwasmParagraphStyle implements ui.ParagraphStyle {
     return (handle, textStyle);
   }
 
+  final ui.PlaceholderAlignment _alignment;
   final ui.TextAlign? _textAlign;
   final ui.TextDirection? _textDirection;
   final ui.FontWeight? _fontWeight;
@@ -854,6 +865,7 @@ class SkwasmParagraphStyle implements ui.ParagraphStyle {
         other._fontSize == _fontSize &&
         other._height == _height &&
         other._textHeightBehavior == _textHeightBehavior &&
+        other._alignment == _alignment &&
         other._strutStyle == _strutStyle &&
         other._ellipsis == _ellipsis &&
         other._locale == _locale;
@@ -871,6 +883,7 @@ class SkwasmParagraphStyle implements ui.ParagraphStyle {
       _fontSize,
       _height,
       _textHeightBehavior,
+      _alignment,
       _strutStyle,
       _ellipsis,
       _locale,

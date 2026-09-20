@@ -353,6 +353,7 @@ abstract class Renderer {
   });
 
   ui.TextStyle createTextStyle({
+    ui.PlaceholderAlignment? alignment,
     required ui.Color? color,
     required ui.TextDecoration? decoration,
     required ui.Color? decorationColor,
@@ -384,6 +385,7 @@ abstract class Renderer {
     double? fontSize,
     double? height,
     ui.TextHeightBehavior? textHeightBehavior,
+    ui.PlaceholderAlignment alignment = ui.PlaceholderAlignment.baseline,
     ui.FontWeight? fontWeight,
     ui.FontStyle? fontStyle,
     ui.StrutStyle? strutStyle,

@@ -83,3 +83,9 @@ SKWASM_EXPORT void paragraphStyle_setApplyRoundingHack(
     bool apply_rounding_hack) {
   style->skia_paragraph_style.setApplyRoundingHack(apply_rounding_hack);
 }
+
+SKWASM_EXPORT void paragraphStyle_setAlignment(
+    Skwasm::ParagraphStyle* style,
+    skia::textlayout::PlaceholderAlignment alignment) {
+  style->skia_paragraph_style.setAlignment(alignment);
+}

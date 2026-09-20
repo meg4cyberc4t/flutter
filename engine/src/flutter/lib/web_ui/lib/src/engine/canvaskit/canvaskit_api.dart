@@ -1923,6 +1923,7 @@ extension type SkParagraphStyleProperties._(JSObject _) implements JSObject {
   external set textDirection(SkTextDirection? value);
   external set heightMultiplier(double? value);
   external set textHeightBehavior(SkTextHeightBehavior? value);
+  external set alignment(int value);
   external set maxLines(int? value);
   external set ellipsis(String? value);
   external set textStyle(SkTextStyleProperties? value);
@@ -2003,6 +2004,8 @@ SkPlaceholderAlignment toSkPlaceholderAlignment(ui.PlaceholderAlignment alignmen
 
 extension type SkTextStyleProperties._(JSObject _) implements JSObject {
   external SkTextStyleProperties({int dummyArgumentToCreateObjectLiteral});
+
+  external set alignment(int value);
 
   @JS('backgroundColor')
   external set _backgroundColor(JSFloat32Array? value);

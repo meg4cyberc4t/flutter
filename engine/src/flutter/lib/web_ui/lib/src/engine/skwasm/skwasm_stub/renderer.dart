@@ -157,6 +157,7 @@ class SkwasmRenderer extends Renderer {
     double? fontSize,
     double? height,
     ui.TextHeightBehavior? textHeightBehavior,
+    ui.PlaceholderAlignment alignment = ui.PlaceholderAlignment.baseline,
     ui.FontWeight? fontWeight,
     ui.FontStyle? fontStyle,
     ui.StrutStyle? strutStyle,
@@ -193,6 +194,7 @@ class SkwasmRenderer extends Renderer {
 
   @override
   ui.TextStyle createTextStyle({
+    ui.PlaceholderAlignment? alignment,
     ui.Color? color,
     ui.TextDecoration? decoration,
     ui.Color? decorationColor,

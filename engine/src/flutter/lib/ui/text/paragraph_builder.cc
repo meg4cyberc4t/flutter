@@ -233,6 +233,9 @@ ParagraphBuilder::ParagraphBuilder(
     tonic::Int32List encoded(encoded_data);
 
     mask = encoded[0];
+    if (mask & (1 << 13)) {
+      style.alignment = static_cast<txt::PlaceholderAlignment>(encoded[7]);
+    }
 
     if (mask & kPSTextAlignMask) {
       style.text_align =
@@ -375,7 +378,7 @@ void ParagraphBuilder::pushStyle(const tonic::Int32List& encoded,
                                  Dart_Handle shadows_data,
                                  Dart_Handle font_features_data,
                                  Dart_Handle font_variations_data) {
-  FML_DCHECK(encoded.num_elements() == 9);
+  FML_DCHECK(encoded.num_elements() == 10);
 
   int32_t mask = encoded[0];
 
@@ -384,6 +387,9 @@ void ParagraphBuilder::pushStyle(const tonic::Int32List& encoded,
   txt::TextStyle style = m_paragraph_builder_->PeekStyle();
 
   style.half_leading = mask & kTSLeadingDistributionMask;
+  if (mask & (1 << 20)) {
+    style.alignment = static_cast<txt::PlaceholderAlignment>(encoded[9]);
+  }
   // Only change the style property from the previous value if a new explicitly
   // set value is available
   if (mask & kTSColorMask) {

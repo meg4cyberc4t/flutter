@@ -10,7 +10,14 @@ library;
 
 import 'dart:ui'
     as ui
-    show Locale, LocaleStringAttribute, ParagraphBuilder, SpellOutStringAttribute, StringAttribute;
+    show
+        Locale,
+        LocaleStringAttribute,
+        ParagraphBuilder,
+        PlaceholderAlignment,
+        TextStyle,
+        SpellOutStringAttribute,
+        StringAttribute;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -78,6 +85,7 @@ class TextSpan extends InlineSpan implements HitTestTarget, MouseTrackerAnnotati
   /// [children] should be set.
   const TextSpan({
     this.text,
+    this.alignment,
     this.children,
     super.style,
     this.recognizer,
@@ -99,6 +107,13 @@ class TextSpan extends InlineSpan implements HitTestTarget, MouseTrackerAnnotati
   ///
   /// This getter does not include the contents of its children.
   final String? text;
+
+  /// Vertical alignment of this text and its descendants.
+  /// Null inherits the parent TextSpan or the paragraph's alignment.
+  /// WidgetSpan retains its own alignment. Boundaries inside a shaped glyph
+  /// cluster or grapheme use the alignment of that cluster's first character.
+  /// Above/below baseline use the alphabetic baseline and may overflow the line.
+  final ui.PlaceholderAlignment? alignment;
 
   /// Additional spans to include as children.
   ///
@@ -289,9 +304,12 @@ class TextSpan extends InlineSpan implements HitTestTarget, MouseTrackerAnnotati
     List<PlaceholderDimensions>? dimensions,
   }) {
     assert(debugAssertIsValid());
-    final hasStyle = style != null;
+    final hasStyle = style != null || alignment != null;
     if (hasStyle) {
-      builder.pushStyle(style!.getTextStyle(textScaler: textScaler));
+      builder.pushStyle(
+        style?.getTextStyle(textScaler: textScaler, alignment: alignment) ??
+            ui.TextStyle(alignment: alignment),
+      );
     }
     if (text != null) {
       try {
@@ -486,7 +504,8 @@ class TextSpan extends InlineSpan implements HitTestTarget, MouseTrackerAnnotati
       return RenderComparison.layout;
     }
     final textSpan = other as TextSpan;
-    if (textSpan.text != text ||
+    if (textSpan.alignment != alignment ||
+        textSpan.text != text ||
         children?.length != textSpan.children?.length ||
         (style == null) != (textSpan.style == null)) {
       return RenderComparison.layout;
@@ -530,6 +549,7 @@ class TextSpan extends InlineSpan implements HitTestTarget, MouseTrackerAnnotati
     }
     return other is TextSpan &&
         other.text == text &&
+        other.alignment == alignment &&
         other.recognizer == recognizer &&
         other.semanticsLabel == semanticsLabel &&
         other.semanticsIdentifier == semanticsIdentifier &&
@@ -543,6 +563,7 @@ class TextSpan extends InlineSpan implements HitTestTarget, MouseTrackerAnnotati
   int get hashCode => Object.hash(
     super.hashCode,
     text,
+    alignment,
     recognizer,
     semanticsLabel,
     semanticsIdentifier,
@@ -560,6 +581,9 @@ class TextSpan extends InlineSpan implements HitTestTarget, MouseTrackerAnnotati
     super.debugFillProperties(properties);
 
     properties.add(StringProperty('text', text, showName: false, defaultValue: null));
+    properties.add(
+      EnumProperty<ui.PlaceholderAlignment>('alignment', alignment, defaultValue: null),
+    );
     if (style == null && text == null && children == null) {
       properties.add(DiagnosticsNode.message('(empty)'));
     }

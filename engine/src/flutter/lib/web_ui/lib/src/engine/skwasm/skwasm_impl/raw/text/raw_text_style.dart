@@ -121,3 +121,6 @@ external void textStyleSetFontVariations(
   Pointer<Float> values,
   int count,
 );
+
+@Native<Void Function(TextStyleHandle, Int)>(symbol: 'textStyle_setAlignment', isLeaf: true)
+external void textStyleSetAlignment(TextStyleHandle handle, int alignment);

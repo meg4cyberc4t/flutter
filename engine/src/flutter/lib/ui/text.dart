@@ -1590,7 +1590,7 @@ bool _listEquals<T>(List<T>? a, List<T>? b) {
 
 // This encoding must match the C++ version of ParagraphBuilder::pushStyle.
 //
-// The encoded array buffer has 8 elements.
+// The encoded array buffer has 10 elements. Alignment uses slot 9 and bit 20.
 //
 //  - Element 0: A bit field where the ith bit indicates whether the ith element
 //    has a non-null value. Bits 8 to 12 indicate whether |fontFamily|,
@@ -1635,8 +1635,9 @@ Int32List _encodeTextStyle(
   List<Shadow>? shadows,
   List<FontFeature>? fontFeatures,
   List<FontVariation>? fontVariations,
+  PlaceholderAlignment? alignment,
 ) {
-  final result = Int32List(9);
+  final result = Int32List(10);
   // The 0th bit of result[0] is reserved for leadingDistribution.
 
   if (color != null) {
@@ -1715,6 +1716,10 @@ Int32List _encodeTextStyle(
     // Passed separately to native.
   }
 
+  if (alignment != null) {
+    result[0] |= 1 << 20;
+    result[9] = alignment.index;
+  }
   return result;
 }
 
@@ -1756,6 +1761,12 @@ class TextStyle {
   /// * `foreground`: The paint used to draw the text. If this is specified, `color` must be null.
   /// * `fontFeatures`: The font features that should be applied to the text.
   /// * `fontVariations`: The font variations that should be applied to the text.
+  /// * `alignment`: Vertical alignment within each existing line. Null inherits
+  ///   the pushed parent style or ParagraphStyle alignment. Baseline preserves
+  ///   ordinary positioning; top, middle and bottom align the font metric box.
+  ///   Above/below baseline use the alphabetic baseline and may overflow the
+  ///   line. Placeholders keep their own alignment. Boundaries inside a grapheme
+  ///   or shaped glyph cluster use the alignment of its first character.
   TextStyle({
     Color? color,
     TextDecoration? decoration,
@@ -1778,6 +1789,7 @@ class TextStyle {
     List<Shadow>? shadows,
     List<FontFeature>? fontFeatures,
     List<FontVariation>? fontVariations,
+    PlaceholderAlignment? alignment,
   }) : assert(
          color == null || foreground == null,
          'Cannot provide both a color and a foreground\n'
@@ -1804,6 +1816,7 @@ class TextStyle {
          shadows,
          fontFeatures,
          fontVariations,
+         alignment,
        ),
        _leadingDistribution = leadingDistribution,
        _fontFamily = fontFamily ?? '',
@@ -1911,6 +1924,7 @@ class TextStyle {
         'foreground: ${_encoded[0] & 0x10000 == 0x10000 ? _foreground : "unspecified"}, '
         'shadows: ${_encoded[0] & 0x20000 == 0x20000 ? _shadows : "unspecified"}, '
         'fontFeatures: ${_encoded[0] & 0x40000 == 0x40000 ? _fontFeatures : "unspecified"}, '
+        '${_encoded[0] & (1 << 20) != 0 ? "alignment: ${PlaceholderAlignment.values[_encoded[9]]}, " : ""}'
         'fontVariations: ${_encoded[0] & 0x80000 == 0x80000 ? _fontVariations : "unspecified"}'
         ')';
   }
@@ -1918,7 +1932,7 @@ class TextStyle {
 
 // This encoding must match the C++ version ParagraphBuilder::build.
 //
-// The encoded array buffer has 6 elements.
+// The encoded array buffer has 8 elements. Alignment uses slot 7 and bit 13.
 //
 //  - Element 0: A bit mask indicating which fields are non-null.
 //    Bit 0 is unused. Bits 1-n are set if the corresponding index in the
@@ -1950,8 +1964,9 @@ Int32List _encodeParagraphStyle(
   StrutStyle? strutStyle,
   String? ellipsis,
   Locale? locale,
+  PlaceholderAlignment alignment,
 ) {
-  final result = Int32List(7); // also update paragraph_builder.cc
+  final result = Int32List(8); // also update paragraph_builder.cc
   if (textAlign != null) {
     result[0] |= 1 << 1;
     result[1] = textAlign.index;
@@ -2002,6 +2017,10 @@ Int32List _encodeParagraphStyle(
     result[0] |= 1 << 12;
     // Passed separately to native.
   }
+  if (alignment != PlaceholderAlignment.baseline) {
+    result[0] |= 1 << 13;
+    result[7] = alignment.index;
+  }
   return result;
 }
 
@@ -2015,6 +2034,13 @@ class ParagraphStyle {
   ///   alignment is applied to that line after it has been truncated but before
   ///   the ellipsis has been added.
   ///   See: https://github.com/flutter/flutter/issues/9819
+  ///
+  /// * `alignment`: Default vertical alignment for text, overridden by
+  ///   TextStyle.alignment. Placeholders keep their own alignment. Font metric
+  ///   boxes move within existing line boxes; shaping and line breaks are
+  ///   unchanged. Above/below baseline may overflow the original line box.
+  ///   On lines using this mode, placeholders with top, middle or bottom alignment
+  ///   use the same final line box. Their baseline modes are unchanged.
   ///
   /// * `textDirection`: The directionality of the text, left-to-right (e.g.
   ///   Norwegian) or right-to-left (e.g. Hebrew). This controls the overall
@@ -2081,6 +2107,7 @@ class ParagraphStyle {
     StrutStyle? strutStyle,
     String? ellipsis,
     Locale? locale,
+    PlaceholderAlignment alignment = PlaceholderAlignment.baseline,
   }) : _encoded = _encodeParagraphStyle(
          textAlign,
          textDirection,
@@ -2094,6 +2121,7 @@ class ParagraphStyle {
          strutStyle,
          ellipsis,
          locale,
+         alignment,
        ),
        _fontFamily = fontFamily,
        _fontSize = fontSize,
@@ -2157,6 +2185,7 @@ class ParagraphStyle {
         'height: ${_encoded[0] & 0x200 == 0x200 ? "${_height}x" : "unspecified"}, '
         'strutStyle: ${_encoded[0] & 0x400 == 0x400 ? _strutStyle : "unspecified"}, '
         'ellipsis: ${_encoded[0] & 0x800 == 0x800 ? '"$_ellipsis"' : "unspecified"}, '
+        '${_encoded[0] & 0x2000 != 0 ? "alignment: ${PlaceholderAlignment.values[_encoded[7]]}, " : ""}'
         'locale: ${_encoded[0] & 0x1000 == 0x1000 ? _locale : "unspecified"}'
         ')';
   }
